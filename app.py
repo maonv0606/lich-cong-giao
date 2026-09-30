@@ -245,16 +245,24 @@ INDEX_HTML = r"""<!DOCTYPE html>
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      padding: 13px 20px;
+      gap: 12px;
+      padding: 14px 20px;
       border-radius: var(--radius-md);
-      font-size: 14.5px;
+      font-size: 15px;
       font-weight: 600;
       text-decoration: none;
       transition: all 0.15s ease;
       cursor: pointer;
       border: 1px solid transparent;
       flex: 1;
+      line-height: 1.3;
+    }
+    .btn-sync svg {
+      width: 26px;
+      height: 26px;
+      min-width: 26px;
+      min-height: 26px;
+      flex-shrink: 0;
     }
     .btn-apple {
       background: #111111;
@@ -273,20 +281,6 @@ INDEX_HTML = r"""<!DOCTYPE html>
     .btn-google:hover {
       background: #F9F9F9;
       border-color: #B0A799;
-    }
-    .btn-download-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 14px;
-      font-size: 13px;
-      color: var(--text-muted);
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .btn-download-link:hover {
-      color: var(--crimson);
-      text-decoration: underline;
     }
 
     /* FEATURE BAR */
@@ -619,7 +613,7 @@ INDEX_HTML = r"""<!DOCTYPE html>
     }
   </style>
 </head>
-<body>
+<body class="font-bevietnam">
 
   <!-- TOP MASTHEAD -->
   <div class="top-strip">
@@ -651,26 +645,17 @@ INDEX_HTML = r"""<!DOCTYPE html>
         <!-- NATIVE 1-CLICK ACTION BUTTONS -->
         <div class="sync-actions">
           <a id="btnApple" href="#" class="btn-sync btn-apple">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
               <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.85-.9.04-2 .6-2.65 1.35-.58.66-1.09 1.73-.95 2.76 1.01.08 2.05-.51 2.68-1.26z"/>
             </svg>
             <span>Thêm vào iPhone / iPad</span>
           </a>
 
           <a id="btnGoogle" href="#" target="_blank" class="btn-sync btn-google">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM7 11h5v5H7z"/>
             </svg>
             <span>Google Calendar</span>
-          </a>
-        </div>
-
-        <div>
-          <a href="/calendar.ics" download="catholic_calendar_2026.ics" class="btn-download-link">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-            </svg>
-            <span>Tải file chuẩn .ics (Nhập thủ công)</span>
           </a>
         </div>
       </div>
@@ -769,18 +754,20 @@ INDEX_HTML = r"""<!DOCTYPE html>
   </div>
 
   <script>
-    // Font switcher logic
-    function switchFont(name) {
+    // Font switcher logic - Mặc định là Hiện Đại (Be Vietnam Pro)
+    function switchFont(name, save = true) {
       document.body.className = 'font-' + name;
       document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
       const activeBtn = document.getElementById('fbtn-' + name);
       if (activeBtn) activeBtn.classList.add('active');
-      try { localStorage.setItem('preferred_font', name); } catch(e){}
+      if (save) {
+        try { localStorage.setItem('preferred_font_v2', name); } catch(e){}
+      }
     }
     const savedFont = (function() {
-      try { return localStorage.getItem('preferred_font') || 'bevietnam'; } catch(e){ return 'bevietnam'; }
+      try { return localStorage.getItem('preferred_font_v2') || 'bevietnam'; } catch(e){ return 'bevietnam'; }
     })();
-    switchFont(savedFont);
+    switchFont(savedFont, false);
 
     const host = window.location.host;
     const protocol = window.location.protocol;
