@@ -618,36 +618,7 @@ INDEX_HTML = r"""<!DOCTYPE html>
       text-decoration: none;
       font-weight: 600;
     }
-
-    /* ADMIN MODAL / DRAWER */
-    .admin-trigger {
-      background: none;
-      border: none;
-      color: var(--text-subtle);
-      font-size: 12px;
-      cursor: pointer;
-      margin-top: 10px;
-      text-decoration: underline;
-    }
-    .admin-panel {
-      display: none;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      margin-top: 20px;
-      text-align: left;
-    }
-    .admin-textarea {
-      width: 100%;
-      height: 180px;
-      font-family: monospace;
-      font-size: 12.5px;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      margin: 10px 0;
-    }
+    /* FOOTER */
   </style>
 </head>
 <body class="font-bevietnam">
@@ -779,13 +750,6 @@ INDEX_HTML = r"""<!DOCTYPE html>
     <!-- FOOTER -->
     <footer>
       <div>Lịch Phụng Vụ Công Giáo • Định dạng tiêu chuẩn iCalendar (RFC 5545)</div>
-      <button class="admin-trigger" onclick="toggleAdmin()">Quản trị: Cập nhật dữ liệu phụng vụ mới</button>
-      
-      <div id="adminPanel" class="admin-panel">
-        <h4 style="font-size: 14px; margin-bottom: 8px;">Cập nhật danh sách ngày lễ:</h4>
-        <textarea id="adminInput" class="admin-textarea" placeholder="Dán văn bản ngày lễ mới..."></textarea>
-        <button class="btn-sync btn-apple" style="padding: 8px 16px; font-size: 13px;" onclick="saveAdminData()">Lưu & Làm mới Lịch</button>
-      </div>
     </footer>
 
   </div>
@@ -963,33 +927,6 @@ INDEX_HTML = r"""<!DOCTYPE html>
       }).join('');
     }
 
-    function toggleAdmin() {
-      const p = document.getElementById("adminPanel");
-      p.style.display = (p.style.display === 'block') ? 'none' : 'block';
-    }
-
-    async function saveAdminData() {
-      const text = document.getElementById("adminInput").value.trim();
-      if (!text) return alert("Vui lòng nhập nội dung!");
-      try {
-        const res = await fetch('/api/update', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({content: text})
-        });
-        const data = await res.json();
-        if (data.success) {
-          alert("Đã cập nhật thành công!");
-          fetchEvents();
-          toggleAdmin();
-        } else {
-          alert("Lỗi: " + data.error);
-        }
-      } catch (e) {
-        alert("Lỗi: " + e.message);
-      }
-    }
-
     fetchEvents();
   </script>
 </body>
@@ -1042,29 +979,12 @@ async def handle_api_events(request):
         })
     return web.json_response(serialized)
 
-async def handle_api_update(request):
-    global current_events
-    try:
-        data = await request.json()
-        new_content = data.get("content", "")
-        if not new_content:
-            return web.json_response({"success": False, "error": "Nội dung trống."})
-
-        with open(DATA_FILE, "w", encoding="utf-8") as f:
-            f.write(new_content)
-
-        current_events = reload_events()
-        return web.json_response({"success": True, "total_events": len(current_events)})
-    except Exception as e:
-        return web.json_response({"success": False, "error": str(e)})
-
 def make_app():
     app = web.Application()
     app.router.add_static('/static/', path='static', name='static')
     app.router.add_get('/', handle_index)
     app.router.add_get('/calendar.ics', handle_ics)
     app.router.add_get('/api/events', handle_api_events)
-    app.router.add_post('/api/update', handle_api_update)
     return app
 
 if __name__ == '__main__':
