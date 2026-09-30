@@ -288,7 +288,9 @@ def generate_ics(events, output_filename="catholic_calendar.ics"):
         "METHOD:PUBLISH",
         f"X-WR-CALNAME:{escape_ics_text(CALENDAR_NAME)}",
         f"X-WR-CALDESC:{escape_ics_text(CALENDAR_DESC)}",
-        "X-WR-TIMEZONE:Asia/Ho_Chi_Minh"
+        "X-WR-TIMEZONE:Asia/Ho_Chi_Minh",
+        "X-PUBLISHED-TTL:P1D",
+        "REFRESH-INTERVAL;VALUE=DURATION:P1D"
     ]
 
     for ev in events:
