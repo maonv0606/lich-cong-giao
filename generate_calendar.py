@@ -367,7 +367,12 @@ def main():
     parsed_events = [parse_event_details(d) for d in raw_days]
     feasts_only = [ev for ev in parsed_events if ev is not None]
     
-    generate_ics(feasts_only, output_file)
+    # Chỉ lấy Lễ Buộc & Lễ Trọng vào file ICS (loại bỏ Chúa Nhật thường và Lễ nhớ/kính)
+    solemnities_only = [
+        ev for ev in feasts_only 
+        if ev.get("is_solemnity") or (ev.get("rank") and ("TRỌNG" in ev["rank"].upper() or "BUỘC" in ev["rank"].upper()))
+    ]
+    generate_ics(solemnities_only, output_file)
 
 if __name__ == "__main__":
     main()

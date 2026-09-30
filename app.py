@@ -20,7 +20,13 @@ def reload_events():
         raw_days = parse_catholic_data(DATA_FILE)
         events = [parse_event_details(d) for d in raw_days]
         feasts_only = [ev for ev in events if ev is not None]
-        generate_ics(feasts_only, ICS_FILE)
+        
+        # Chỉ nạp Lễ Buộc & Lễ Trọng vào file ICS (loại bỏ Chúa Nhật thường và Lễ nhớ/kính khỏi điện thoại)
+        solemnities_only = [
+            ev for ev in feasts_only 
+            if ev.get("is_solemnity") or (ev.get("rank") and ("TRỌNG" in ev["rank"].upper() or "BUỘC" in ev["rank"].upper()))
+        ]
+        generate_ics(solemnities_only, ICS_FILE)
         return feasts_only
     return []
 
@@ -670,7 +676,7 @@ INDEX_HTML = r"""<!DOCTYPE html>
         <div class="kicker">Đồng Bộ Lịch Điện Thoại</div>
         <h1 class="hero-title">Lịch Phụng Vụ & Lời Chúa</h1>
         <p class="hero-desc">
-          Tự động cập nhật các ngày Lễ Trọng, Lễ Buộc và các bài đọc Lời Chúa trong Thánh lễ vào ứng dụng Lịch của iPhone và Android kèm thông báo nhắc lễ.
+          Đồng bộ các ngày Lễ Trọng và Lễ Buộc vào ứng dụng Lịch iPhone & Android kèm chuông nhắc lễ. Tra cứu đầy đủ các ngày lễ phụng vụ và Bài đọc Lời Chúa trực tiếp trên web.
         </p>
 
         <!-- NATIVE 1-CLICK ACTION BUTTONS -->
