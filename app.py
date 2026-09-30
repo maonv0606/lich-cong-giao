@@ -31,12 +31,43 @@ INDEX_HTML = r"""<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lịch Phụng Vụ Công Giáo - Năm Phụng Vụ 2026</title>
   
-  <meta property="og:title" content="Lịch Phụng Vụ Công Giáo - Năm Phụng Vụ 2026">
-  <meta property="og:description" content="Đồng bộ tự động các ngày Lễ Trọng, Lễ Kính, Lễ Buộc và Bài Đọc Thánh Lễ vào iPhone & Android.">
-  <meta property="og:image" content="/static/images/social_card.jpg">
+  <!-- SEO & Primary Meta Tags -->
+  <title>Lịch Phụng Vụ Công Giáo 2026 - Đồng Bộ iPhone & Android</title>
+  <meta name="title" content="Lịch Phụng Vụ Công Giáo 2026 - Đồng Bộ iPhone & Android">
+  <meta name="description" content="Đồng bộ tự động 1 chạm các ngày Lễ Trọng, Lễ Buộc, Lễ Kính và Bài Đọc Lời Chúa vào ứng dụng Lịch iPhone, iPad và Android. Có chuông thông báo nhắc lễ.">
+  <meta name="keywords" content="lịch công giáo, lịch phụng vụ 2026, đồng bộ lịch iphone, google calendar công giáo, bài đọc lời chúa, lễ trọng, lễ buộc">
+  <meta name="author" content="Giáo Hội Công Giáo Việt Nam">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Facebook / Messenger / Zalo -->
   <meta property="og:type" content="website">
+  <meta property="og:url" content="{{PUBLIC_BASE_URL}}/">
+  <meta property="og:title" content="Lịch Phụng Vụ Công Giáo 2026 - Đồng Bộ iPhone & Android">
+  <meta property="og:description" content="Đồng bộ tự động 1 chạm các ngày Lễ Trọng, Lễ Buộc, Lễ Kính và Bài Đọc Lời Chúa vào ứng dụng Lịch iPhone & Android kèm chuông nhắc lễ.">
+  <meta property="og:image" content="{{PUBLIC_BASE_URL}}/static/images/social_card.jpg">
+  <meta property="og:image:secure_url" content="{{PUBLIC_BASE_URL}}/static/images/social_card.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1376">
+  <meta property="og:image:height" content="768">
+  <meta property="og:image:alt" content="Lịch Phụng Vụ Công Giáo - Năm Phụng Vụ 2026">
+  <meta property="og:site_name" content="Lịch Phụng Vụ Công Giáo">
+  <meta property="og:locale" content="vi_VN">
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="{{PUBLIC_BASE_URL}}/">
+  <meta name="twitter:title" content="Lịch Phụng Vụ Công Giáo 2026 - Đồng Bộ iPhone & Android">
+  <meta name="twitter:description" content="Đồng bộ tự động 1 chạm các ngày Lễ Trọng, Lễ Buộc, Lễ Kính và Bài Đọc Lời Chúa vào ứng dụng Lịch iPhone & Android kèm chuông nhắc lễ.">
+  <meta name="twitter:image" content="{{PUBLIC_BASE_URL}}/static/images/social_card.jpg">
+  <meta name="twitter:image:alt" content="Lịch Phụng Vụ Công Giáo 2026">
+
+  <!-- Apple & Mobile Browser Meta -->
+  <meta name="theme-color" content="#7D1A25">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Lịch Công Giáo">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{PUBLIC_BASE_URL}}/static/images/social_card.jpg">
   <link rel="icon" type="image/jpeg" href="/static/images/social_card.jpg">
 
   <!-- Google Fonts: Be Vietnam Pro (Native Vietnamese Modern Sans) + Lora (Literary Serif) + Playfair Display -->
@@ -960,7 +991,17 @@ INDEX_HTML = r"""<!DOCTYPE html>
 """
 
 async def handle_index(request):
-    return web.Response(text=INDEX_HTML, content_type='text/html')
+    scheme = request.headers.get("X-Forwarded-Proto", request.scheme)
+    host = request.headers.get("X-Forwarded-Host", request.host)
+    base_url = f"{scheme}://{host}"
+    
+    # URL công khai cho crawler mạng xã hội (Zalo, Facebook Messenger)
+    public_base_url = base_url
+    if "localhost" in host or "127.0.0.1" in host or host.startswith("10.") or host.startswith("192."):
+        public_base_url = "https://lich-cong-giao-bn2u.onrender.com"
+        
+    html = INDEX_HTML.replace("{{PUBLIC_BASE_URL}}", public_base_url).replace("{{BASE_URL}}", base_url)
+    return web.Response(text=html, content_type='text/html')
 
 async def handle_ics(request):
     if not os.path.exists(ICS_FILE):
