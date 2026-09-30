@@ -776,9 +776,12 @@ INDEX_HTML = r"""<!DOCTYPE html>
     // Webcal URL for iOS Safari (Native 1-tap subscription sheet)
     document.getElementById("btnApple").href = "webcal://" + host + "/calendar.ics";
 
-    // Google Calendar render intent
-    const fullIcs = protocol + "//" + host + "/calendar.ics";
-    document.getElementById("btnGoogle").href = "https://calendar.google.com/calendar/render?cid=" + encodeURIComponent(fullIcs);
+    // Google Calendar render intent:
+    // Nếu chạy tại localhost, trỏ về domain public Render để máy chủ Google nạp được file
+    const isLocal = host.includes("localhost") || host.includes("127.0.0.1") || host.startsWith("10.") || host.startsWith("192.");
+    const googleHost = isLocal ? "lich-cong-giao-bn2u.onrender.com" : host;
+    const googleIcs = "webcal://" + googleHost + "/calendar.ics";
+    document.getElementById("btnGoogle").href = "https://calendar.google.com/calendar/r?cid=" + encodeURIComponent(googleIcs);
 
     let rawEvents = [];
     let currentFilter = 'all';

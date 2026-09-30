@@ -324,13 +324,13 @@ def generate_ics(events, output_filename="catholic_calendar.ics"):
                     "END:VALARM"
                 ])
             
-            # Nhắc sáng ngày lễ (07:00)
+            # Nhắc sáng ngày lễ (Bắt đầu ngày lễ, chuẩn RFC tương thích 100% Google Calendar & iOS)
             if REMIND_MORNING_OF_FEAST:
                 event_lines.extend([
                     "BEGIN:VALARM",
                     "ACTION:DISPLAY",
                     f"DESCRIPTION:Hôm nay: {escape_ics_text(ev['summary'])}",
-                    "TRIGGER;RELATED=START:PT7H",  # 7:00 AM on the day
+                    "TRIGGER:-PT0M",
                     "END:VALARM"
                 ])
 
